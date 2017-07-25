@@ -1,0 +1,119 @@
+=============================
+File description
+=============================
+
+README          			This file
+
+Sjavac.java					This class gets a file from the user scan its line and send it 
+							to divider to separate members and variables.
+							
+Manager.java				This class manage the whole operation of the class.
+
+SynataxError.java			This class checks the initial syntax error that can occur when scanning the file
+
+Parser.java					This class gets file and return an arrayList of all lines that are not comments.
+
+
+Divider.java				This class divide the file into 3 groups:  methods group, variables group
+ 							and method call group. 
+ 							
+regExp.java					This class contains a bank of regular expressions the compiler uses.
+
+MethodCall.java				This class get a string and add it to an array that collect all method calls
+							of the file.
+
+AllMethodCall.java			This method call gets Strings of method calls and build an arrayList of MethodCall
+							instances.	
+
+isMethodCallLegal.java		This class gets an arrayList of method declaration and check if they are legal
+							method calls or not
+		
+Methods.java				This class gets an arrayList of method lines check the method declaration
+							and method content. If one of the method's line is incorrect it throws an error
+
+Variable.java				This class create a variable instance
+
+CreateVariables.java		This class gets Strings represent variable and turn them to variable objects
+
+VerifyVariable.java			This class gets a variables and check if they are legal variables or not.
+
+CompilationException.java	This class alert whenever a compilation error occur.
+
+======
+Design
+======
+
+In this exercise we have decided to create 5 packages: main, toolbox, variable, method, and Exception.
+The main package contains the classes Sjavac, Manager and SyntaxError. We also created 3 classes that helping
+the main package operate the compiler(Divider,Parser and RegExp). After getting the file from the
+user the Sjavac class send it to Parser(toolbox package) class that checks if there aren't 
+comments and return an arrayList of all the file lines that are not comments. After that we check that all the lines
+in the file are members or method and that they are legal commands in java therefore we send the arrayList we got 
+from Parser to class Manager that gets an arraylist of lines and send it to Divider(toolbox package) that divide
+the file's lines into 3 groups: methods, method declarations and variables. When the Manager gets all the divided 
+lines he sends each part to the classes that check them according to their types. If the Manager gets from the
+Divider an arrayList of variables it sends it to Variable classes(in the variable package) that check the String 
+and determines if the String line is a legal Variable or not. After that it checks the methods and method 
+declarations (in the method package) and see that all method and method declarations are legal.
+If at some points some of the classes mentioned above locates a line that is not legal it throws a compilation error.
+We also added to the toolbox package the class SyntaxError that is being used by Manager class. SyntaxError check 
+initial syntax error that may occur at the beginning of the file reading. 
+In this exercise we choose to deal with exceptions by building a class called CompilationException (in the exception
+package). This class inherits from java's Exception class but responsible to alert in case of a compilation error.
+We choose to write it because we needed a class that only alert when compilation error occurs and because we 
+needed to print a different massage every time the class detect a problem in the program. When one of the methods
+reach an illegal line it needs to print the error type(compilation) but it also needs to give an informative
+massage so the user would understand which part of the file the error occur. 
+
+=====================
+Implementation Issues
+=====================
+===================
+Answer to Questions
+===================
+
+1. 
+
+In case we want to add to our code a new type of variable we modify class verifyVariable by adding
+a new case to the switch command in method CheckVarTypes. If, for example we would like to add a case 
+that check a short type variable we add a case checks if the value of the variable matches the short type
+regex and if it does we return that the type is "short". Because we used the "switch" command it would
+only takes a few lines of code to add a new types of variable.
+
+
+2. We choose option #1: For loops:
+
+In case we would have to check for loops we would add a method in class Methods because for loops are checked
+inside a method. when class Methods reads each line and detect the word 'for' it suspect that the line contain 
+a for loop so it send it to method 2 optional methods: 
+
+I: The original for loop- If the isMethodLegal method reads a line and the line contain the word "for"
+and doesn't contain the char ':' it knows that we definitely don't have the for-each loop type.
+Therefore the method send it to a method called "isForLoop" that check the declaration line and return 
+true if it is indeed a for loop. This method first check the for loop declaration: checks that it has 
+a parenthesis and that the last char of the line should be '{'. It knows that after the "for" word there should be 
+a parenthesis that includes 3 semicolons. We take the content inside the parenthesis and split it whenever
+we see ';' (using java's String split method). Now we know that on the first cell of the array should be 
+initialization, so we can compare it to a regex that represent an initialization of  a for loop and if it matches
+we continue to the next cell. We know that according to the for loops syntax before the first and last semicolons 
+there should be an exit condition so we check that the string in the second cell matches the regex exit condition,
+that the variable in the expression exist in the method or in the class and that the variable in the first
+cell(the initialized variable) matches the variable in the exit condition). The last cell in the array (the 
+string between the last semicolon and the closer parenthesis) should be an incrementor or decrementor so we check
+it's regex and check that the variable needed to be decremented/incremented matches the variable in the first 
+two cells. We check that all the varaible we got from the split array are legal (using verifyVariable class)
+and if the for declaration is legal we return true to the isMethodLegal that start counting the curly 
+parenthesis and the variable and method declaration that may appear in the for loop block. (as it does to the if 
+and while block). If the method isForOk returns false we print an error that state that something is wrong with 
+the for loop declaration. We would also deal with not so ordinary situations where for example, the for loop
+doesn't include increment/decrement after the second semicolon. In that situation it means that the there is no 
+variable that needs to be increment and that the for loop stops whenever the termination phase has arrived. It also
+would deal a situation of 'for ( ; ; )' - that would be an infinite for loop since all tree expression of the for
+loop are optional. 
+
+II: If the method isMethodLegal detect the word "for" and a colon char (':') it know it might be a for-each loop.
+So we would build a method called isForEachLoop which takes the String and check if it a legal for-each loop command.
+First it split the content in the parenthesis (before the colon char and after) in one cell we should get
+the type and it's name and on the other cell we'll get the object we want to iterate over. We check that
+if the object exist and that it's legal (sing verifyVariable class) and matches the variable type and name,
+if it is return true, false otherwise. 

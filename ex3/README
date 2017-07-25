@@ -1,0 +1,69 @@
+==================
+= File Description:  =
+==================
+
+ex3.jar contains:
+README - this file.
+AvlTree.java - a public class containing the implementation of the AVL tree.
+AvlNode.java - a class containing the implementation for the node from which the AVL tree
+is built.
+						 
+=============
+= Design: =
+=============
+
+AvlTree class contains the following public methods:
+add(int newValue): adding the given value to the tree, the method first checks whether or not
+this value exists in the tree, only if it doesn't already exist, the add method calls the helper
+add method with the current value in order to add the value with the algorithm we learned in class,
+for adding data to BST. after the node has been added, this node is being sent to another helper
+method called balance, which checks whether or not the addition of the current node had disturbed
+the balance in the tree. and if so, it locates where there disturbance has been and rotates the tree
+accordingly (using four more helper methods for each of the possible disturbances).
+The add method is boolean, it returns true if the value was added and false if not.
+
+delete(int toDelete): this method removes the current value from the tree. it sends the value 
+to the helper method contains which returns the current node that contains the given value, if found.
+after that, it sends the node to a helper delete method which removes the node from the tree and then
+calls for the balance method in order to check for disturbance just like with the add function.
+
+size(): this method calls a helper recursion method and returns the number of nodes in the tree.
+
+contains(int value): this method calls a helper method which runs recursively all over the nodes 
+in the tree and returns the current node if it contains the same value as the value we were
+searching for. it returns null if the value is not found. if a node was returned the contains 
+method returns the depth of the node. and if not, it returns -1.
+
+constructors: 
+a default constructor: creates an empty tree.
+constructor that creates a tree from a given int array: creates a tree and inserts the values
+in the int array one by one.
+
+AvlNode:
+
+contains a constructor that creates a single node with the given int value.
+this class has all the needed parameters for a given node. such as right child, left child,
+parent, height etc..
+
+
+==========================
+= Implementation Issues: =
+==========================
+
+==========================
+= Answer to Questions: =
+==========================
+Find a series of 20 numbers, such that when they are inserted into an empty AVL
+ tree one-by-one, the result is a tree where the left sub-tree of the root has 15 nodes, 
+ while the right sub-tree of the root has only 4 nodes (insertions only, no deletions).
+ 
+ Answer: for the series of {60,30,70,25,35,65,75,80,20,27,32,38,19,21,26,28,31,33,37,39},
+ adding these numbers by this order one by one will create an AVL tree where the left
+ subtree contains 15 nodes while the right subtree contains only 4 nodes. the difference
+ is caused because the 2nd level of the tree (counting root as level 0) in the right subtree
+ contains only one node out of the possible 4 while the left subtree in this level contains
+ 4 nodes (3 nodes more). and for the 3rd level, the right subtree contains 0 nodes out of the
+ possible 8, while the left subtree in this level, contains all 8 (3+8=11), so the result is,
+ the left subtree contains 11 more nodes than the right subtree, even though the height difference
+ is only 1. (the largest height of the tree in the left subtree is 3, while the largest height
+ of the tree for the right subtree is 2).						

@@ -1,0 +1,182 @@
+================
+= Introduction =
+================
+
+Since their “invention” in 1913, crosswords became very popular; you can find them in 
+newspapers and in different games. They are used to test vocabulary, language knowledge 
+and thematic skills. 
+
+This program, that we were asked to implement, creates a crossword for a given dictionary 
+and structure.
+
+
+====================
+= File Description =
+====================
+
+README          			This file
+
+Crossword.java				Initializes all structures associated with crossword dictionary.
+
+CrosswordDictionary.java	Represents a dictionary that keeps words and their matching definitions.
+
+CrosswordEnty.java			A crossword entry is a word at a given position in a crossword.
+
+CrosswordPosition.java		Specifies a basic position of an entry in a crossword.
+
+CrosswordStructure.java		Loads and initializes the structure from a text file. 
+
+IsMoveLegal.java			this class implements methods for testing the legality of moves in crosswords
+ 							moves are possible places to put words			
+ 							
+Moves.java	an iterator that runs over legal available moves for pacing each word. this class will be called by the method 
+  							MyCrossword.getMovesIterator().
+
+MyCrossword.java			construct new MyCrossword object from an existing one
+
+MyCrosswordDictionary.java	Basic implementation of CrosswordDictionary interface. Based on HashMap
+
+MyCrosswordEnty.java		 this class implements a CrosswordEntry a CrosswordEntry composed of a term,
+							 definition and position on the board
+
+MyCrosswordPosition.java	this class implements a CrosswordPosition
+ 							a CrosswordPosition composed of X and Y coordinates, and it can be vertical or
+ 							horizontal
+
+MyCrosswordStructure.java 	This is a basic implementation of CrosswordShape. The shape is stored as list of 
+							strings.
+
+StringLength.java			This class compares 2 Strings
+
+CrosswordViewer.java		This class represents the gui implementation of the program
+
+BoardMove.java				This is a marker interface for moves compatible with search board
+
+DepthFirstSearch.java		This interface contains the method for a search. The type parameter B stands
+							for a concrete type of SearchBoardEntry.
+							
+MyDepthFirstSearch.java		this class implements a DepthFirstSearch, for running over a moves tree and get the 
+						 	best possible solution.
+						 	
+SearchBoard.java			A search board node is a possible solution of a problem, for example
+ 							a partially completed crossword. The type parameter M stands for 
+							a concrete type that extends BoardMove.
+							
+HorseBoard.java				This example implements board for well known "horse move" puzzle 
+							also known as "open knight tour"
+
+HorseMove.java				This class which represents a single move for HorseBoard-based puzzle.
+							It keeps 3 fields: x, y and move number. 							
+
+HorsePuzzle.java			This example implements board for well known "horse move" puzzle 
+							also known as "open knight tour"
+
+MyTimer.java				This class can stop the running of Interruptible class after a given time
+
+==========
+= Design =
+==========
+
+The Search package contains 3 interfaces from CLIDS and one class that was written by us 
+that implements the DepthFirsSearch interface. This class runs over all possible boards 
+in a recursive depth first search (for graphs that we learnt in east class) and returns 
+the best possible board (solution) within the time limit given by the timeout parameter.
+also we've implemented an inner class called timeout that is simply controlled by the 
+timer object in toolbox. once the program reaches time limit the timer switches timeout 
+to true and the search stops, returning the current best solution.
+
+In package GUI we get the class CrossViewer from CLIDS and
+didn't change it. 
+
+In Package Crosswords we got 4 interfaces from CLIDS and implement them in classes:
+MyCrossword,MyCrosswordEntry and MyCrosswordPosition. In class MyCrossword we get a crossword 
+object and manage it by updating it's quality, quality bound, it's definitions and so on.
+ 
+We also added three classes:
+
+IsMoveLegal - this class contains methods that check if a certain move is legal or not.
+
+Move - this class implements iterator and responsible to iterate over all places that we 
+can place a word on the board.
+
+StringLength - This class implements comparator that compares between two words according 
+to their length.
+
+also we've modified CLIDS' crossword dictionary interface by adding two methods, one that 
+returns all current term's length and the other returns the max length for a word in the 
+current dictionary.
+In crossword structure we also made slight changes by adding an abstract method (getSlotTypeByPos) 
+that much like getSlotType returns the slot type but this method, receives coordinates and returns 
+the slot type object according to it's location (by using the original getSlotType method).
+
+TheSearchSample package is a package we got from CLIDS that contain three classes: 
+HorseBoard, HorseMove and HorsePuzzle.
+
+The last package is the toolBox package: In this package we've implemented MyTimer class 
+which controls the inner timeout class in MyDepthFirstSearch class (this class extends the 
+original java until Timer object). 
+
+=========================
+=  Answer to Questions  =
+=========================
+
+1. how your framework supports the incorporation of additional optimization methods and new ways for 
+calculating UQ 
+
+In case we want to add another optimization methods and add more ways to calculating UQ we need to modify
+the class IsMoveLegal. This class gets a crossword position and determines if a specific word/term matches this
+position or not. first it checks if it matches the position vertically if yes return true otherwise checks
+if this word matches the position horizontally if yes return true otherwise return false. In case we want
+to add more methods that add more optimization we simply add another line starts with "if" statement-
+if the new rule for optimization occur we return true, false other wise. In case there are too many new
+optimization rules we simply write another method for example suppose we need to check that some condition
+needs to occur in order to make the algorithm run faster, so we can build another method called:
+private boolean isOptimizorOccur(String term, PostionX, PositionY) and we can add all the statements we
+want in order to see if this rule is relevant if yes we return true to the isLegalMove method, false otherwise.
+In case we to add new ways to calculate UQ we need to modify the method undoMove and doMove in class
+MyCrossword because those methods are responsible to update the quality bound and the quality value
+every time a word is being added/deleted. If we want to add new ways to calculate the quality bound and
+the quality we need to change these methods and it would not effect any other methods or class in the 
+program because we only need to change the lines that are responsible to calculate the bound quality
+for example if we want to add a different way to calculate the UQ the psoudo code of the doMove method
+would be:
+ 
+doMove(CrosswordEntry move) 
+	moves++;
+	if(move==null){
+		the new formula that calculates the quality bound
+	entry.put(move.getTerm(), move);
+	the new formula that calculates the quality
+}
+ 
+2) In order to change the scoring of this class we simply need to change the calculation of the quality
+and quality bound in the doMove undoMove methods. If, for example, we want to give a better score to words
+that have capital letters or other letters that we picked in advanced, the quality bound and quality bound and
+quality be calculating differently that word. First we need to check that these letter indeed appears and
+we can build a helper method that checks if certain letters appear, if so it returns the number of
+special letter other wise return -1. If there were, for example 3 special letters that their scoring
+is being calculated differently we first calculating their score in the doMove,undoMove methods
+(or build another helper methods that calculates their scores) and add it the quality and quality bound
+of the "regular" letters. 
+
+*Describe your decisions on utilized and data structure used in crossword and search 
+
+in my crossword implementation:
+For the entries it was an easy decision, we used Map structure in order to be able to save both String object as 
+the key which represents the term of the word and the entry it was positioned in. that way we know 
+the position and definition of each word that is in the crossword. 
+We also created two-dimensional array that represents the exact positions which are available in order to know 
+how many available place do we have to place a word on the board.
+this structure is being updated with every call for do or undo move. 
+we chose this data structure because of it's 2d function and also because every cell is reachable.
+also we used a string array to represent the list of terms instead of set in order to use the arrays sort function.
+
+*Discuss the complexity of the DFS search:
+
+this search iterates over the edges in the graph (each of the possible crossboards) so the 
+complexity depends on the possible moves for each word (all the possible positions to place it).
+We also know that each word can be placed horizontally or vertically therefore the complexity is
+for this algorithm is O(2*width of the board*height of the board)^(number of words).
+In this complexity we consider the worse case where the number of maxDepth and the time are larger
+than the worst case mentioned above, the method would stop once it checks all options and return
+the best solution found.
